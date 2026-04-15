@@ -260,7 +260,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'oneThird',
+            size: 'half',
           },
           {
             enableLink: false,
@@ -313,7 +313,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'oneThird',
+            size: 'half',
           },
           {
             enableLink: false,
@@ -366,7 +366,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'oneThird',
+            size: 'half',
           },
           {
             enableLink: false,
@@ -451,7 +451,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'oneThird',
+            size: 'half',
           },
           {
             enableLink: false,
@@ -504,7 +504,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 version: 1,
               },
             },
-            size: 'oneThird',
+            size: 'half',
           },
         ],
       },

@@ -5,6 +5,14 @@ import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
+import { Armor } from './collections/AlienRPG/Armor'
+import { AvatarPresets } from './collections/AlienRPG/AvatarPresets'
+import { Avatars } from './collections/AlienRPG/Avatars'
+import { Gear } from './collections/AlienRPG/Gear'
+import { Players } from './collections/AlienRPG/Players'
+import { StressAndPanicResponses } from './collections/AlienRPG/StressAndPanicResponses'
+import { TinyItems } from './collections/AlienRPG/TinyItems'
+import { Weapons } from './collections/AlienRPG/Weapons'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
@@ -66,7 +74,21 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Users,
+    Players,
+    Avatars,
+    AvatarPresets,
+    StressAndPanicResponses,
+    TinyItems,
+    Armor,
+    Gear,
+    Weapons,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,
