@@ -19,6 +19,7 @@ export const AvatarPresets: CollectionConfig = {
   fields: [
     {
       name: 'preset_notes',
+      label: 'Preset notes',
       type: 'textarea',
       admin: {
         description: 'GM-only notes about when to use this preset.',

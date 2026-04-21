@@ -71,6 +71,7 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
   },
   {
     name: 'story_background',
+    label: 'Story background',
     type: 'textarea',
   },
   {
@@ -105,12 +106,14 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
       },
       {
         name: 'story_points',
+        label: 'Story points',
         type: 'number',
         defaultValue: 0,
         min: 0,
       },
       {
         name: 'stress_level',
+        label: 'Stress level',
         type: 'number',
         defaultValue: 0,
         min: 0,
@@ -119,6 +122,7 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
   },
   {
     name: 'stress_and_panic_responses',
+    label: 'Stress and panic responses',
     type: 'relationship',
     relationTo: 'stress-and-panic-responses',
     hasMany: false,
@@ -165,10 +169,12 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
   },
   {
     name: 'critical_injuries_and_trauma',
+    label: 'Critical injuries and trauma',
     type: 'text',
   },
   {
     name: 'signature_item',
+    label: 'Signature item',
     type: 'text',
   },
   {
@@ -177,6 +183,7 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
     fields: [
       {
         name: 'tiny_items',
+        label: 'Tiny items',
         type: 'relationship',
         relationTo: 'tiny-items',
         hasMany: true,
@@ -209,8 +216,8 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
         type: 'row',
         fields: [
           { name: 'strength', type: 'number', defaultValue: 0 },
-          { name: 'close_combat', type: 'number', defaultValue: 0 },
-          { name: 'heavy_machinery', type: 'number', defaultValue: 0 },
+          { name: 'close_combat', label: 'Close combat', type: 'number', defaultValue: 0 },
+          { name: 'heavy_machinery', label: 'Heavy machinery', type: 'number', defaultValue: 0 },
         ],
       },
       {
@@ -219,7 +226,7 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
           { name: 'agility', type: 'number', defaultValue: 0 },
           { name: 'mobility', type: 'number', defaultValue: 0 },
           { name: 'piloting', type: 'number', defaultValue: 0 },
-          { name: 'ranged_combat', type: 'number', defaultValue: 0 },
+          { name: 'ranged_combat', label: 'Ranged combat', type: 'number', defaultValue: 0 },
         ],
       },
       {
@@ -237,7 +244,7 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
           { name: 'empathy', type: 'number', defaultValue: 0 },
           { name: 'command', type: 'number', defaultValue: 0 },
           { name: 'manipulation', type: 'number', defaultValue: 0 },
-          { name: 'medical_aid', type: 'number', defaultValue: 0 },
+          { name: 'medical_aid', label: 'Medical aid', type: 'number', defaultValue: 0 },
         ],
       },
     ],
