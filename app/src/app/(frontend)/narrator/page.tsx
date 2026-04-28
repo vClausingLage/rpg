@@ -18,7 +18,7 @@ export default async function NarratorPage() {
 
   const req = await createLocalReq({ user }, payload)
 
-  const [players, presets, responses] = await Promise.all([
+  const [players, presets, responses, tinyItems, armor, gear, weapons] = await Promise.all([
     payload.find({
       collection: 'players',
       depth: 3,
@@ -43,10 +43,48 @@ export default async function NarratorPage() {
       req,
       sort: 'name',
     }),
+    payload.find({
+      collection: 'tiny-items',
+      depth: 0,
+      limit: 100,
+      pagination: false,
+      req,
+      sort: 'name',
+    }),
+    payload.find({
+      collection: 'armor',
+      depth: 0,
+      limit: 100,
+      pagination: false,
+      req,
+      sort: 'name',
+    }),
+    payload.find({
+      collection: 'gear',
+      depth: 0,
+      limit: 100,
+      pagination: false,
+      req,
+      sort: 'name',
+    }),
+    payload.find({
+      collection: 'weapons',
+      depth: 0,
+      limit: 100,
+      pagination: false,
+      req,
+      sort: 'name',
+    }),
   ])
 
   return (
     <NarratorDashboard
+      loadoutOptions={{
+        armor: armor.docs,
+        gear: gear.docs,
+        tiny_items: tinyItems.docs,
+        weapons: weapons.docs,
+      }}
       players={players.docs}
       presets={presets.docs}
       responses={responses.docs}

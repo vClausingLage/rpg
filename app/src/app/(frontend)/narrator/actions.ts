@@ -72,6 +72,12 @@ const numberFields = new Set([
 const booleanFields = new Set(['isMechanic', 'isFatigued', 'isRadiated'])
 const hasManyFields = new Set(['tiny_items', 'gear', 'weapons'])
 const attachableCollections = new Set(['tiny-items', 'armor', 'gear', 'weapons'])
+const relationFieldCollections: Record<string, CollectionSlug> = {
+  armor: 'armor',
+  gear: 'gear',
+  tiny_items: 'tiny-items',
+  weapons: 'weapons',
+}
 
 async function getAuthedLocalAPI() {
   const payload = await getPayload({ config: configPromise })
@@ -89,13 +95,14 @@ async function getAuthedLocalAPI() {
 
 function idOf(value: unknown) {
   if (!value) return undefined
-  if (typeof value === 'object' && 'id' in value) return String(value.id)
-  return String(value)
+  if (typeof value === 'object' && 'id' in value) return value.id as string | number
+  if (typeof value === 'string' || typeof value === 'number') return value
+  return undefined
 }
 
 function idsOf(value: unknown) {
   if (!Array.isArray(value)) return []
-  return value.map(idOf).filter(Boolean) as string[]
+  return value.map(idOf).filter((id): id is string | number => id !== undefined)
 }
 
 function formString(formData: FormData, name: string) {
@@ -172,11 +179,47 @@ export async function attachNewItem(formData: FormData) {
       req,
     })
   } else {
-    const nextIds = [...idsOf(avatar[field as keyof typeof avatar]), String(created.id)]
+    const nextIds = [...idsOf(avatar[field as keyof typeof avatar]), created.id]
     await payload.update({
       collection: 'avatars',
       id: avatarId,
       data: { [field]: nextIds },
+      req,
+    })
+  }
+
+  revalidatePath('/narrator')
+}
+
+export async function attachExistingItem(formData: FormData) {
+  const avatarId = formString(formData, 'avatarId')
+  const field = formString(formData, 'field')
+  const collection = formString(formData, 'collection') as CollectionSlug
+  const selectedItemId = formString(formData, 'itemId')
+
+  if (!avatarId || !field || !selectedItemId || !attachableCollections.has(collection)) return
+  if (relationFieldCollections[field] !== collection) return
+  if (field !== 'armor' && !hasManyFields.has(field)) return
+
+  const { payload, req } = await getAuthedLocalAPI()
+  const avatar = await payload.findByID({ collection: 'avatars', id: avatarId, depth: 0, req })
+  const item = await payload.findByID({ collection, id: selectedItemId, depth: 0, req })
+
+  if (field === 'armor') {
+    await payload.update({
+      collection: 'avatars',
+      id: avatarId,
+      data: { armor: item.id },
+      req,
+    })
+  } else {
+    const currentIds = idsOf(avatar[field as keyof typeof avatar])
+    if (currentIds.some((id) => String(id) === String(item.id))) return
+
+    await payload.update({
+      collection: 'avatars',
+      id: avatarId,
+      data: { [field]: [...currentIds, item.id] },
       req,
     })
   }
@@ -197,7 +240,7 @@ export async function detachItem(formData: FormData) {
   if (field === 'armor') {
     await payload.update({ collection: 'avatars', id: avatarId, data: { armor: null }, req })
   } else if (hasManyFields.has(field)) {
-    const nextIds = idsOf(avatar[field as keyof typeof avatar]).filter((id) => id !== itemId)
+    const nextIds = idsOf(avatar[field as keyof typeof avatar]).filter((id) => String(id) !== itemId)
     await payload.update({ collection: 'avatars', id: avatarId, data: { [field]: nextIds }, req })
   }
 

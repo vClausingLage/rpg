@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 
 import {
+  attachExistingItem,
   attachNewItem,
   createAvatarFromPreset,
   createPlayer,
@@ -11,6 +12,8 @@ import {
 } from '@/app/(frontend)/narrator/actions'
 
 type Doc = Record<string, any>
+type LoadoutField = 'tiny_items' | 'armor' | 'gear' | 'weapons'
+type LoadoutOptions = Record<LoadoutField, Doc[]>
 
 const vitalFields = [
   'stress_level',
@@ -51,17 +54,27 @@ function relationList(value: unknown) {
   return Array.isArray(value) ? value : []
 }
 
+function relationIds(value: unknown) {
+  if (Array.isArray(value)) return value.map(docId).filter(Boolean)
+  const id = docId(value)
+  return id ? [id] : []
+}
+
 function FieldForm({
   avatarId,
   field,
   value,
   type = 'number',
+  autoSubmit = false,
 }: {
   avatarId: string
   field: string
   value: unknown
   type?: 'number' | 'text' | 'textarea' | 'boolean'
+  autoSubmit?: boolean
 }) {
+  const formRef = useRef<HTMLFormElement>(null)
+
   if (type === 'boolean') {
     const checked = Boolean(value)
     return (
@@ -78,7 +91,7 @@ function FieldForm({
   }
 
   return (
-    <form action={updateAvatarField} className="rounded border border-[#24433d] bg-[#07110f] p-3">
+    <form action={updateAvatarField} className="rounded border border-[#24433d] bg-[#07110f] p-3" ref={formRef}>
       <input name="avatarId" type="hidden" value={avatarId} />
       <input name="field" type="hidden" value={field} />
       <label className="mb-2 block text-xs uppercase tracking-[0.12em] text-[#8bb8aa]">{label(field)}</label>
@@ -93,12 +106,22 @@ function FieldForm({
           className="w-full rounded border border-[#315a51] bg-[#020504] px-3 py-2 text-sm text-[#d8eee8]"
           defaultValue={String(value ?? '')}
           name="value"
+          onBlur={autoSubmit ? () => formRef.current?.requestSubmit() : undefined}
+          onKeyDown={
+            autoSubmit
+              ? (event) => {
+                  if (event.key === 'Enter') formRef.current?.requestSubmit()
+                }
+              : undefined
+          }
           type={type}
         />
       )}
-      <button className="mt-2 rounded bg-[#c7d66d] px-3 py-1 text-sm font-medium text-[#08100e]" type="submit">
-        Save
-      </button>
+      {!autoSubmit && (
+        <button className="mt-2 rounded bg-[#c7d66d] px-3 py-1 text-sm font-medium text-[#08100e]" type="submit">
+          Save
+        </button>
+      )}
     </form>
   )
 }
@@ -157,13 +180,18 @@ function RelationEditor({
   field,
   collection,
   fields,
+  options,
 }: {
   avatar: Doc
-  field: string
+  field: LoadoutField
   collection: string
   fields: { name: string; type?: string; placeholder?: string }[]
+  options: Doc[]
 }) {
+  const [showCreateForm, setShowCreateForm] = useState(false)
   const items = field === 'armor' ? (avatar[field] ? [avatar[field]] : []) : relationList(avatar[field])
+  const attachedIds = new Set(relationIds(avatar[field]))
+  const availableOptions = field === 'armor' ? options : options.filter((option) => !attachedIds.has(docId(option)))
 
   return (
     <section className="rounded border border-[#24433d] bg-[#07110f] p-4">
@@ -189,33 +217,62 @@ function RelationEditor({
           </div>
         ))}
       </div>
-      <form action={attachNewItem} className="mt-4 grid gap-2 sm:grid-cols-2">
+      <form action={attachExistingItem} className="mt-4 flex flex-col gap-2 sm:flex-row">
         <input name="avatarId" type="hidden" value={avatar.id} />
         <input name="field" type="hidden" value={field} />
         <input name="collection" type="hidden" value={collection} />
-        {fields.map((input) => (
-          <input
-            className="min-h-10 rounded border border-[#315a51] bg-[#020504] px-3 text-sm text-[#d8eee8]"
-            key={input.name}
-            name={input.name}
-            placeholder={input.placeholder || label(input.name)}
-            required={input.name === 'name'}
-            type={input.type || 'text'}
-          />
-        ))}
+        <select className="min-h-10 flex-1 rounded border border-[#315a51] bg-[#020504] px-3 text-sm text-[#d8eee8]" name="itemId" required>
+          <option value="">Select {label(field)}</option>
+          {availableOptions.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
+            </option>
+          ))}
+        </select>
         <button className="rounded bg-[#c7d66d] px-3 py-2 text-sm font-medium text-[#08100e]" type="submit">
           Add
         </button>
       </form>
+      <div className="mt-3 flex justify-end">
+        <button
+          className="flex h-8 w-8 items-center justify-center rounded border border-[#315a51] text-sm text-[#d7f46b]"
+          onClick={() => setShowCreateForm((value) => !value)}
+          type="button"
+        >
+          +
+        </button>
+      </div>
+      {showCreateForm && (
+        <form action={attachNewItem} className="mt-3 grid gap-2 sm:grid-cols-2">
+          <input name="avatarId" type="hidden" value={avatar.id} />
+          <input name="field" type="hidden" value={field} />
+          <input name="collection" type="hidden" value={collection} />
+          {fields.map((input) => (
+            <input
+              className="min-h-10 rounded border border-[#315a51] bg-[#020504] px-3 text-sm text-[#d8eee8]"
+              key={input.name}
+              name={input.name}
+              placeholder={input.placeholder || label(input.name)}
+              required={input.name === 'name'}
+              type={input.type || 'text'}
+            />
+          ))}
+          <button className="rounded bg-[#c7d66d] px-3 py-2 text-sm font-medium text-[#08100e]" type="submit">
+            Create and add
+          </button>
+        </form>
+      )}
     </section>
   )
 }
 
 export function NarratorDashboard({
+  loadoutOptions,
   players,
   presets,
   responses,
 }: {
+  loadoutOptions: LoadoutOptions
   players: Doc[]
   presets: Doc[]
   responses: Doc[]
@@ -320,22 +377,25 @@ export function NarratorDashboard({
 
             <StressPanel avatar={avatar} responses={responses} />
 
+            <h2 className="text-lg uppercase tracking-[0.12em] text-[#e6f0ca]">Vitals</h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {vitalFields.map((field) => (
-                <FieldForm avatarId={avatar.id} field={field} key={field} value={avatar[field]} />
+                <FieldForm autoSubmit avatarId={avatar.id} field={field} key={field} value={avatar[field]} />
               ))}
             </div>
 
+            <h2 className="text-lg uppercase tracking-[0.12em] text-[#e6f0ca]">Attributes</h2>
             <div className="grid gap-3 lg:grid-cols-2">
               {attributeGroups.map((group) => (
                 <div className="grid gap-3 sm:grid-cols-2" key={group.join('-')}>
                   {group.map((field) => (
-                    <FieldForm avatarId={avatar.id} field={field} key={field} value={avatar[field]} />
+                    <FieldForm autoSubmit avatarId={avatar.id} field={field} key={field} value={avatar[field]} />
                   ))}
                 </div>
               ))}
             </div>
 
+            <h2 className="text-lg uppercase tracking-[0.12em] text-[#e6f0ca]">Personal</h2>
             <div className="grid gap-4 lg:grid-cols-2">
               {textFields.map((field) => (
                 <FieldForm avatarId={avatar.id} field={field} key={field} type="textarea" value={avatar[field]} />
@@ -343,7 +403,13 @@ export function NarratorDashboard({
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <RelationEditor avatar={avatar} collection="tiny-items" field="tiny_items" fields={[{ name: 'name' }]} />
+              <RelationEditor
+                avatar={avatar}
+                collection="tiny-items"
+                field="tiny_items"
+                fields={[{ name: 'name' }]}
+                options={loadoutOptions.tiny_items}
+              />
               <RelationEditor
                 avatar={avatar}
                 collection="armor"
@@ -353,6 +419,7 @@ export function NarratorDashboard({
                   { name: 'level', type: 'number' },
                   { name: 'weight', type: 'number' },
                 ]}
+                options={loadoutOptions.armor}
               />
               <RelationEditor
                 avatar={avatar}
@@ -363,6 +430,7 @@ export function NarratorDashboard({
                   { name: 'power' },
                   { name: 'weight', type: 'number' },
                 ]}
+                options={loadoutOptions.gear}
               />
               <RelationEditor
                 avatar={avatar}
@@ -376,6 +444,7 @@ export function NarratorDashboard({
                   { name: 'ammo', type: 'number' },
                   { name: 'weight', type: 'number' },
                 ]}
+                options={loadoutOptions.weapons}
               />
             </div>
           </section>
