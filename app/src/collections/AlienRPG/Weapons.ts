@@ -45,5 +45,9 @@ export const Weapons: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
     },
+    {
+      name: 'special',
+      type: 'text',
+    }
   ],
 }

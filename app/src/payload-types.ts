@@ -917,6 +917,7 @@ export interface Gear {
   name: string;
   power?: string | null;
   weight?: number | null;
+  effect?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -932,6 +933,7 @@ export interface Weapon {
   range?: string | null;
   ammo?: number | null;
   weight?: number | null;
+  special?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1748,6 +1750,7 @@ export interface GearSelect<T extends boolean = true> {
   name?: T;
   power?: T;
   weight?: T;
+  effect?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1762,6 +1765,7 @@ export interface WeaponsSelect<T extends boolean = true> {
   range?: T;
   ammo?: T;
   weight?: T;
+  special?: T;
   updatedAt?: T;
   createdAt?: T;
 }

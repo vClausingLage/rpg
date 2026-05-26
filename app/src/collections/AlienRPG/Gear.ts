@@ -34,5 +34,9 @@ export const Gear: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
     },
+    {
+      name: 'effect',
+      type: 'text',
+    }
   ],
 }
