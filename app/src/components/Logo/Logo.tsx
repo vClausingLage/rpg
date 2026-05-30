@@ -7,6 +7,8 @@ interface Props {
   priority?: 'auto' | 'high' | 'low'
 }
 
+const facehuggerLogoSrc = '/facehugger.jpg'
+
 export const Logo = (props: Props) => {
   const { loading: loadingFromProps, priority: priorityFromProps, className } = props
 
@@ -16,14 +18,22 @@ export const Logo = (props: Props) => {
   return (
     /* eslint-disable @next/next/no-img-element */
     <img
-      alt="Payload Logo"
-      width={193}
-      height={34}
+      alt="Facehugger logo"
+      width={500}
+      height={500}
       loading={loading}
       fetchPriority={priority}
       decoding="async"
-      className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
-      src="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-logo-light.svg"
+      className={clsx('size-12 rounded-md object-cover', className)}
+      src={facehuggerLogoSrc}
     />
   )
+}
+
+export const AdminLogo = () => {
+  return <Logo className="size-24 rounded-xl" loading="eager" priority="high" />
+}
+
+export const AdminIcon = () => {
+  return <Logo className="size-8 rounded-md" loading="eager" priority="high" />
 }
