@@ -353,7 +353,7 @@ export function NarratorDashboard({
             </form>
           </section>
         ) : (
-          <section className="space-y-6">
+          <section className="space-y-6" key={docId(avatar.id)}>
             <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
               <div className="overflow-hidden rounded border border-[#24433d] bg-[#07110f]">
                 {picture?.url ? (
