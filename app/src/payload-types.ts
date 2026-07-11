@@ -845,6 +845,7 @@ export interface Avatar {
   strength?: number | null;
   close_combat?: number | null;
   heavy_machinery?: number | null;
+  stamina?: number | null;
   agility?: number | null;
   mobility?: number | null;
   piloting?: number | null;
@@ -977,6 +978,7 @@ export interface AvatarPreset {
   strength?: number | null;
   close_combat?: number | null;
   heavy_machinery?: number | null;
+  stamina?: number | null;
   agility?: number | null;
   mobility?: number | null;
   piloting?: number | null;
@@ -1645,6 +1647,7 @@ export interface AvatarsSelect<T extends boolean = true> {
   strength?: T;
   close_combat?: T;
   heavy_machinery?: T;
+  stamina?: T;
   agility?: T;
   mobility?: T;
   piloting?: T;
@@ -1696,6 +1699,7 @@ export interface AvatarPresetsSelect<T extends boolean = true> {
   strength?: T;
   close_combat?: T;
   heavy_machinery?: T;
+  stamina?: T;
   agility?: T;
   mobility?: T;
   piloting?: T;
