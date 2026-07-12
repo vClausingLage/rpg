@@ -218,6 +218,7 @@ export const coreAvatarFields = ({ includePlayer }: { includePlayer: boolean }):
           { name: 'strength', type: 'number', defaultValue: 0 },
           { name: 'close_combat', label: 'Close combat', type: 'number', defaultValue: 0 },
           { name: 'heavy_machinery', label: 'Heavy machinery', type: 'number', defaultValue: 0 },
+          { name: 'stamina', type: 'number', defaultValue: 0 },
         ],
       },
       {

@@ -1,5 +1,6 @@
 import configPromise from '@payload-config'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { MotionTrackerSoundboard } from '@/components/AlienRPG/MotionTrackerSoundboard'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createLocalReq, getPayload } from 'payload'
@@ -33,8 +34,9 @@ export default async function NarratorOverviewPage() {
   const page = result.docs[0]
 
   return (
-    <main className="min-h-screen bg-[#020504] px-4 py-8 text-[#d8eee8] sm:px-6">
-      <div className="mx-auto max-w-5xl">
+    <main className="min-h-screen bg-[#020504] text-[#d8eee8]">
+      <MotionTrackerSoundboard />
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-0">
         <a className="text-sm text-[#d7f46b] underline-offset-4 hover:underline" href="/narrator">
           Back to dashboard
         </a>
@@ -59,6 +61,16 @@ export default async function NarratorOverviewPage() {
             </p>
           </section>
         )}
+
+        <section className="mt-8 rounded border border-[#24433d] bg-[#07110f] p-6">
+          <h2 className="text-xl text-[#f1f4de]">Sound snippet ideas</h2>
+          <div className="mt-4 grid gap-3 text-sm text-[#8bb8aa] sm:grid-cols-2">
+            <p>Ship hum loops for calm travel, emergency power, cryo deck, and derelict silence.</p>
+            <p>Access doors, pressure seals, elevator starts, airlock cycling, and terminal beeps.</p>
+            <p>Radio chatter layers: clean comms, broken transmissions, distress calls, and static bursts.</p>
+            <p>Threat cues: vent movement, distant metal impacts, claws on grating, and breath in a suit mic.</p>
+          </div>
+        </section>
       </div>
     </main>
   )

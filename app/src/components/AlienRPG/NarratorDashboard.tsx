@@ -16,7 +16,6 @@ type LoadoutField = 'tiny_items' | 'armor' | 'gear' | 'weapons'
 type LoadoutOptions = Record<LoadoutField, Doc[]>
 
 const vitalFields = [
-  'stress_level',
   'health',
   'resolve',
   'exp',
@@ -26,10 +25,22 @@ const vitalFields = [
 ]
 
 const attributeGroups = [
-  ['strength', 'close_combat', 'heavy_machinery'],
-  ['agility', 'mobility', 'piloting', 'ranged_combat'],
-  ['wits', 'comtech', 'observation', 'survival'],
-  ['empathy', 'command', 'manipulation', 'medical_aid'],
+  {
+    primary: 'strength',
+    skills: ['close_combat', 'heavy_machinery', 'stamina'],
+  },
+  {
+    primary: 'agility',
+    skills: ['mobility', 'piloting', 'ranged_combat'],
+  },
+  {
+    primary: 'wits',
+    skills: ['comtech', 'observation', 'survival'],
+  },
+  {
+    primary: 'empathy',
+    skills: ['command', 'manipulation', 'medical_aid'],
+  },
 ]
 
 const textFields = [
@@ -171,6 +182,80 @@ function StressPanel({ avatar, responses }: { avatar: Doc; responses: Doc[] }) {
           Set response
         </button>
       </form>
+    </section>
+  )
+}
+
+function AttributeValueForm({
+  avatarId,
+  field,
+  primary = false,
+  value,
+}: {
+  avatarId: string
+  field: string
+  primary?: boolean
+  value: unknown
+}) {
+  const formRef = useRef<HTMLFormElement>(null)
+
+  return (
+    <form
+      action={updateAvatarField}
+      className={
+        primary
+          ? 'rounded border border-[#d7f46b] bg-[#111c18] p-4'
+          : 'rounded border border-[#315a51] bg-[#020504] p-3'
+      }
+      ref={formRef}
+    >
+      <input name="avatarId" type="hidden" value={avatarId} />
+      <input name="field" type="hidden" value={field} />
+      <label
+        className={
+          primary
+            ? 'mb-2 block text-xs uppercase tracking-[0.14em] text-[#d7f46b]'
+            : 'mb-2 block text-xs uppercase tracking-[0.12em] text-[#8bb8aa]'
+        }
+      >
+        {label(field)}
+      </label>
+      <input
+        className={
+          primary
+            ? 'w-full rounded border border-[#496f65] bg-[#020504] px-3 py-3 font-mono text-3xl text-[#f1f4de]'
+            : 'w-full rounded border border-[#315a51] bg-[#020504] px-3 py-2 text-sm text-[#d8eee8]'
+        }
+        defaultValue={String(value ?? '')}
+        name="value"
+        onBlur={() => formRef.current?.requestSubmit()}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') formRef.current?.requestSubmit()
+        }}
+        type="number"
+      />
+    </form>
+  )
+}
+
+function AttributePanel({
+  avatar,
+  group,
+}: {
+  avatar: Doc
+  group: {
+    primary: string
+    skills: string[]
+  }
+}) {
+  return (
+    <section className="rounded border border-[#24433d] bg-[#07110f] p-4">
+      <AttributeValueForm avatarId={avatar.id} field={group.primary} primary value={avatar[group.primary]} />
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        {group.skills.map((field) => (
+          <AttributeValueForm avatarId={avatar.id} field={field} key={field} value={avatar[field]} />
+        ))}
+      </div>
     </section>
   )
 }
@@ -369,9 +454,6 @@ export function NarratorDashboard({
                 <FieldForm avatarId={avatar.id} field="class" type="text" value={avatar.class} />
                 <FieldForm avatarId={avatar.id} field="career" type="text" value={avatar.career} />
                 <FieldForm avatarId={avatar.id} field="age" type="text" value={avatar.age} />
-                <FieldForm avatarId={avatar.id} field="isMechanic" type="boolean" value={avatar.isMechanic} />
-                <FieldForm avatarId={avatar.id} field="isFatigued" type="boolean" value={avatar.isFatigued} />
-                <FieldForm avatarId={avatar.id} field="isRadiated" type="boolean" value={avatar.isRadiated} />
               </div>
             </div>
 
@@ -384,14 +466,16 @@ export function NarratorDashboard({
               ))}
             </div>
 
+            <div className="grid gap-3 sm:grid-cols-3">
+              <FieldForm avatarId={avatar.id} field="isMechanic" type="boolean" value={avatar.isMechanic} />
+              <FieldForm avatarId={avatar.id} field="isFatigued" type="boolean" value={avatar.isFatigued} />
+              <FieldForm avatarId={avatar.id} field="isRadiated" type="boolean" value={avatar.isRadiated} />
+            </div>
+
             <h2 className="text-lg uppercase tracking-[0.12em] text-[#e6f0ca]">Attributes</h2>
             <div className="grid gap-3 lg:grid-cols-2">
               {attributeGroups.map((group) => (
-                <div className="grid gap-3 sm:grid-cols-2" key={group.join('-')}>
-                  {group.map((field) => (
-                    <FieldForm autoSubmit avatarId={avatar.id} field={field} key={field} value={avatar[field]} />
-                  ))}
-                </div>
+                <AttributePanel avatar={avatar} group={group} key={group.primary} />
               ))}
             </div>
 
