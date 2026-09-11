@@ -1,0 +1,428 @@
+/*
+ * Custom admin theme — "Nostromo terminal".
+ *
+ * Payload ships its own styles inside `@layer payload-default`; everything here
+ * is unlayered, so it wins on cascade without specificity fights.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Palette                                                            */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --rpg-accent: #4ade80; /* neon green */
+  --rpg-accent-strong: #22c55e;
+  --rpg-accent-soft: rgba(74, 222, 128, 0.14);
+  --rpg-accent-glow: rgba(74, 222, 128, 0.35);
+  --rpg-amber: #f5b342; /* secondary — warning lights */
+  --rpg-amber-soft: rgba(245, 179, 66, 0.14);
+  --rpg-card-radius: 10px;
+}
+
+html[data-theme='dark'] {
+  /* Tint the greyscale toward green-black so the dark theme stops being flat */
+  --color-base-900: #0c1210;
+  --color-base-850: #111a16;
+  --color-base-800: #16221c;
+  --color-base-750: #1d2c24;
+  --color-base-700: #24362c;
+  --color-base-650: #2d4236;
+  --color-base-600: #385040;
+  --color-base-550: #45604e;
+  --color-base-450: #64826f;
+  --color-base-400: #7a9885;
+  --color-base-350: #94ad9d;
+  --color-base-300: #adc1b4;
+  --color-base-250: #c3d2c9;
+  --color-base-200: #d5e0da;
+  --color-base-150: #e3ebe6;
+  --color-base-100: #eef3f0;
+  --color-base-50: #f5f8f6;
+  --color-base-0: #ffffff;
+
+  /* Payload's "success" scale drives focus rings & success banners → green */
+  --theme-success-500: var(--rpg-accent);
+  --theme-success-550: var(--rpg-accent-strong);
+  --theme-success-600: var(--rpg-accent);
+  --theme-success-100: rgba(74, 222, 128, 0.18);
+  --theme-success-150: rgba(74, 222, 128, 0.28);
+  --theme-success-200: rgba(74, 222, 128, 0.35);
+
+  --theme-border-color: var(--theme-elevation-150);
+}
+
+/* Light theme still gets the accents, just on a neutral base */
+html[data-theme='light'] {
+  --theme-success-500: var(--rpg-accent-strong);
+  --theme-success-550: #16a34a;
+}
+
+/* ------------------------------------------------------------------ */
+/* Typography                                                         */
+/* ------------------------------------------------------------------ */
+
+html {
+  font-size: 14px;
+  line-height: 21px;
+}
+
+@media (max-width: 1024px) {
+  html {
+    font-size: 13px;
+    line-height: 20px;
+  }
+}
+
+/* Left sidebar */
+.nav {
+  --nav-padding-inline-start: calc(var(--base) * 1.2);
+  --nav-padding-inline-end: var(--base);
+  background: linear-gradient(180deg, var(--theme-elevation-50) 0%, var(--theme-elevation-0) 100%);
+  border-right: 1px solid var(--theme-elevation-150);
+}
+
+html[data-theme='dark'] .nav {
+  box-shadow: inset -1px 0 0 rgba(74, 222, 128, 0.08);
+}
+
+.nav-group {
+  margin-bottom: calc(var(--base) * 0.9);
+}
+
+.nav-group__toggle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rpg-accent);
+  opacity: 0.85;
+  margin-bottom: calc(var(--base) * 0.4);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rpg-accent-soft);
+}
+
+.nav-group__toggle:hover,
+.nav-group__toggle:focus-visible {
+  opacity: 1;
+  color: var(--rpg-accent);
+}
+
+.nav-group__toggle:hover .stroke,
+.nav-group__indicator svg .stroke {
+  stroke: var(--rpg-accent);
+}
+
+.nav__link {
+  font-size: 15px;
+  line-height: 1.3;
+  padding-block: 6px;
+  padding-inline-start: 10px;
+  margin-inline-start: -10px;
+  border-radius: 6px;
+  color: var(--theme-elevation-700);
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.nav__link:hover,
+.nav a.nav__link:focus-visible {
+  text-decoration: none;
+  color: var(--theme-elevation-1000);
+  background: var(--theme-elevation-100);
+}
+
+.nav__link.active,
+.nav__link:has(.nav__link-indicator) {
+  color: var(--rpg-accent);
+  background: var(--rpg-accent-soft);
+  font-weight: 600;
+  padding-inline-start: 10px;
+}
+
+.nav__link-indicator {
+  inset-inline-start: 0;
+  width: 3px;
+  height: 60%;
+  top: 20%;
+  border-radius: 0 3px 3px 0;
+  background: var(--rpg-accent);
+  box-shadow: 0 0 8px var(--rpg-accent-glow);
+}
+
+.nav__label {
+  font-size: 15px;
+}
+
+.nav__controls {
+  gap: 12px;
+  padding-top: var(--base);
+  border-top: 1px solid var(--theme-elevation-150);
+}
+
+.nav__controls .nav__log-out,
+.nav__controls a,
+.nav__controls button {
+  color: var(--theme-elevation-500);
+}
+
+.nav__controls a:hover,
+.nav__controls button:hover {
+  color: var(--rpg-amber);
+}
+
+/* ------------------------------------------------------------------ */
+/* Dashboard                                                          */
+/* ------------------------------------------------------------------ */
+
+.dashboard__label,
+.collections__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rpg-accent);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard__label::after,
+.collections__label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--rpg-accent-soft), transparent);
+}
+
+.collections__card-list {
+  gap: 16px;
+}
+
+/* Collection cards */
+.card {
+  padding: 0;
+  min-height: calc(var(--base) * 4.4);
+  gap: 0;
+  border-radius: var(--rpg-card-radius);
+  border: 1px solid var(--theme-elevation-150);
+  background: linear-gradient(160deg, var(--theme-elevation-100) 0%, var(--theme-elevation-50) 100%);
+  overflow: hidden;
+  align-items: stretch;
+}
+
+.card__title {
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 600;
+  margin: 0;
+  padding: calc(var(--base) * 0.9) calc(var(--base) * 0.9);
+  align-self: center;
+  color: var(--theme-elevation-900);
+}
+
+.card--has-onclick:hover {
+  border-color: var(--rpg-accent);
+  background: linear-gradient(160deg, var(--theme-elevation-150) 0%, var(--theme-elevation-50) 100%);
+  box-shadow: 0 0 0 1px var(--rpg-accent-soft), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+.card--has-onclick {
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease, background 120ms ease;
+}
+
+.card--has-onclick:hover .card__title {
+  color: var(--theme-elevation-1000);
+}
+
+/* The "+ create" action: full-height strip on the right, green border */
+.card__actions {
+  display: flex;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.card__actions .btn {
+  display: flex;
+  height: 100%;
+  margin: 0;
+}
+
+.card__actions .btn__content {
+  height: 100%;
+}
+
+.card__actions .btn__icon {
+  --btn-icon-size: 100%;
+  height: 100%;
+  width: 60px;
+  min-height: 100%;
+  border-radius: 0;
+  border: 0;
+  border-left: 2px solid var(--rpg-accent);
+  background: var(--rpg-accent-soft);
+  color: var(--rpg-accent);
+  padding: 0;
+  box-shadow: none;
+  transition: background 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+.card__actions .btn__icon svg {
+  width: 34px;
+  height: 34px;
+}
+
+.card__actions .btn__icon .stroke {
+  stroke: var(--rpg-accent);
+  stroke-width: 2;
+}
+
+.card__actions .btn:hover .btn__icon,
+.card__actions .btn:focus-visible .btn__icon {
+  --color: #0c1210;
+  --hover-color: #0c1210;
+  background: var(--rpg-accent);
+  border-left-color: var(--rpg-accent);
+  color: var(--color-base-900);
+  box-shadow: inset 0 0 0 1px var(--rpg-accent), 0 0 16px var(--rpg-accent-glow);
+}
+
+.card__actions .btn:hover .btn__icon .stroke,
+.card__actions .btn:focus-visible .btn__icon .stroke {
+  stroke: #0c1210;
+  stroke-width: 2.5;
+}
+
+/* Cards that can't create (globals / no permission) keep a subtle accent edge */
+.card:not(:has(.card__actions)) {
+  border-right: 3px solid var(--rpg-amber);
+}
+
+/* Welcome banner (BeforeDashboard) */
+.before-dashboard .banner--type-success {
+  background: linear-gradient(90deg, var(--rpg-accent-soft), transparent 70%);
+  border: 1px solid var(--rpg-accent-soft);
+  border-left: 4px solid var(--rpg-accent);
+  color: var(--theme-elevation-900);
+}
+
+.before-dashboard .banner h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Global accents                                                     */
+/* ------------------------------------------------------------------ */
+
+/* Header / breadcrumbs */
+.app-header {
+  border-bottom: 1px solid var(--theme-elevation-100);
+  background: var(--theme-bg);
+}
+
+.step-nav a:hover {
+  color: var(--rpg-accent);
+}
+
+/* Primary buttons → green */
+.btn--style-primary {
+  --bg-color: var(--rpg-accent);
+  --hover-bg: var(--rpg-accent-strong);
+  --color: #0c1210;
+  --hover-color: #0c1210;
+  font-weight: 600;
+}
+
+.btn--style-secondary {
+  --color: var(--rpg-accent);
+  --hover-color: var(--rpg-accent-strong);
+}
+
+/* Links */
+.template-default a:not(.btn):not(.nav__link):not(.card__click):not(.step-nav__home):hover {
+  color: var(--rpg-accent);
+}
+
+/* Inputs */
+input:focus,
+textarea:focus,
+.rs__control--is-focused,
+.field-type input:focus-visible {
+  border-color: var(--rpg-accent) !important;
+  box-shadow: 0 0 0 2px var(--rpg-accent-soft) !important;
+}
+
+/* List view: table header + pills */
+.table thead th {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rpg-accent);
+  border-bottom: 1px solid var(--rpg-accent-soft);
+}
+
+.table tbody tr:hover td {
+  background: var(--theme-elevation-50);
+}
+
+.pill--style-success {
+  background: var(--rpg-accent-soft);
+  color: var(--rpg-accent);
+}
+
+.pill--style-warning {
+  background: var(--rpg-amber-soft);
+  color: var(--rpg-amber);
+}
+
+/* Document status / publish controls */
+.doc-controls__status .pill {
+  font-weight: 600;
+}
+
+/* Hamburger + collapse controls */
+.hamburger:hover {
+  box-shadow: 0 0 0 1px var(--rpg-accent);
+}
+
+/* Scrollbars (WebKit) */
+html[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: var(--theme-elevation-200);
+  border-radius: 8px;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: var(--rpg-accent-strong);
+}
+
+/* Login screen */
+.template-minimal .btn--style-primary {
+  width: 100%;
+}
+
+.login__brand,
+.template-minimal .graphic-logo {
+  filter: drop-shadow(0 0 18px var(--rpg-accent-glow));
+}
+
+/* Logo sizing — the Tailwind `size-*` classes on AdminLogo/AdminIcon don't
+   exist in the admin bundle, so the raw 500px image was rendered as-is. */
+.template-minimal__wrap > img[alt='Facehugger logo'],
+.login__brand img {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin: 0 auto calc(var(--base) * 1.2);
+  display: block;
+  border: 1px solid var(--rpg-accent-soft);
+}
+
+.nav__brand img,
+.app-header img[alt='Facehugger logo'],
+.graphic-icon img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  object-fit: cover;
+}
