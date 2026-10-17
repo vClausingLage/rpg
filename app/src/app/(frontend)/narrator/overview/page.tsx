@@ -1,5 +1,6 @@
 import configPromise from '@payload-config'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { GameClock } from '@/components/AlienRPG/GameClock'
 import { MotionTrackerSoundboard } from '@/components/AlienRPG/MotionTrackerSoundboard'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -46,6 +47,8 @@ export default async function NarratorOverviewPage() {
             {page?.title || 'Narrator overview'}
           </h1>
         </div>
+
+        <GameClock />
 
         {page?.layout?.length ? (
           <div className="text-[#d8eee8]">
