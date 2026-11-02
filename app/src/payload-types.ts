@@ -73,6 +73,7 @@ export interface Config {
     categories: Category;
     users: User;
     players: Player;
+    stories: Story;
     avatars: Avatar;
     'avatar-presets': AvatarPreset;
     'stress-and-panic-responses': StressAndPanicResponse;
@@ -103,6 +104,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     players: PlayersSelect<false> | PlayersSelect<true>;
+    stories: StoriesSelect<false> | StoriesSelect<true>;
     avatars: AvatarsSelect<false> | AvatarsSelect<true>;
     'avatar-presets': AvatarPresetsSelect<false> | AvatarPresetsSelect<true>;
     'stress-and-panic-responses': StressAndPanicResponsesSelect<false> | StressAndPanicResponsesSelect<true>;
@@ -805,6 +807,10 @@ export interface Player {
   id: number;
   name: string;
   avatar?: (number | null) | Avatar;
+  /**
+   * Story this player takes part in.
+   */
+  story?: (number | null) | Story;
   updatedAt: string;
   createdAt: string;
 }
@@ -935,6 +941,57 @@ export interface Weapon {
   ammo?: number | null;
   weight?: number | null;
   special?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stories".
+ */
+export interface Story {
+  id: number;
+  title: string;
+  status?: ('planned' | 'running' | 'finished') | null;
+  summary?: string | null;
+  /**
+   * Narrator script: premise, acts, NPCs, secrets.
+   */
+  script?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional block-based page shown as this story's overview.
+   */
+  overviewPage?: (number | null) | Page;
+  /**
+   * IDs of rooms the narrator has revealed to the players ("shipId:roomId").
+   */
+  revealedRooms?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1207,6 +1264,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'players';
         value: number | Player;
+      } | null)
+    | ({
+        relationTo: 'stories';
+        value: number | Story;
       } | null)
     | ({
         relationTo: 'avatars';
@@ -1608,6 +1669,23 @@ export interface UsersSelect<T extends boolean = true> {
 export interface PlayersSelect<T extends boolean = true> {
   name?: T;
   avatar?: T;
+  story?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stories_select".
+ */
+export interface StoriesSelect<T extends boolean = true> {
+  title?: T;
+  status?: T;
+  summary?: T;
+  script?: T;
+  overviewPage?: T;
+  revealedRooms?: T;
+  generateSlug?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

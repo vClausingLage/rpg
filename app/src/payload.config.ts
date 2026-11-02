@@ -10,6 +10,7 @@ import { AvatarPresets } from './collections/AlienRPG/AvatarPresets'
 import { Avatars } from './collections/AlienRPG/Avatars'
 import { Gear } from './collections/AlienRPG/Gear'
 import { Players } from './collections/AlienRPG/Players'
+import { Stories } from './collections/AlienRPG/Stories'
 import { StressAndPanicResponses } from './collections/AlienRPG/StressAndPanicResponses'
 import { TinyItems } from './collections/AlienRPG/TinyItems'
 import { Weapons } from './collections/AlienRPG/Weapons'
@@ -85,6 +86,7 @@ export default buildConfig({
     Categories,
     Users,
     Players,
+    Stories,
     Avatars,
     AvatarPresets,
     StressAndPanicResponses,

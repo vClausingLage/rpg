@@ -27,5 +27,12 @@ export const Players: CollectionConfig = {
       relationTo: 'avatars',
       hasMany: false,
     },
+    {
+      name: 'story',
+      type: 'relationship',
+      relationTo: 'stories',
+      hasMany: false,
+      admin: { position: 'sidebar', description: 'Story this player takes part in.' },
+    },
   ],
 }

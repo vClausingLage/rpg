@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import { createLocalReq, getPayload } from 'payload'
 
 import { NarratorDashboard } from '@/components/AlienRPG/NarratorDashboard'
+import { StorySwitcher } from '@/components/AlienRPG/StorySwitcher'
+import { getActiveStory } from '@/utilities/activeStory'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,10 +20,13 @@ export default async function NarratorPage() {
 
   const req = await createLocalReq({ user }, payload)
 
+  const { stories, active } = await getActiveStory(payload, req)
+
   const [players, presets, responses, tinyItems, armor, gear, weapons] = await Promise.all([
     payload.find({
       collection: 'players',
       depth: 3,
+      where: active ? { story: { equals: active.id } } : undefined,
       limit: 100,
       pagination: false,
       req,
@@ -78,7 +83,14 @@ export default async function NarratorPage() {
   ])
 
   return (
+    <>
+    <div className="border-b border-[#24433d] bg-[#050c0a] px-4 py-3 sm:px-6">
+      <div className="mx-auto max-w-7xl">
+        <StorySwitcher activeId={active?.id} next="/narrator" stories={stories} />
+      </div>
+    </div>
     <NarratorDashboard
+      storyId={active?.id}
       loadoutOptions={{
         armor: armor.docs,
         gear: gear.docs,
@@ -89,5 +101,6 @@ export default async function NarratorPage() {
       presets={presets.docs}
       responses={responses.docs}
     />
+    </>
   )
 }

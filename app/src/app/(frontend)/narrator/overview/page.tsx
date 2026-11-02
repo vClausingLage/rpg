@@ -1,6 +1,8 @@
 import configPromise from '@payload-config'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { GameClock } from '@/components/AlienRPG/GameClock'
+import { StorySwitcher } from '@/components/AlienRPG/StorySwitcher'
+import { getActiveStory } from '@/utilities/activeStory'
 import { MotionTrackerSoundboard } from '@/components/AlienRPG/MotionTrackerSoundboard'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -19,18 +21,22 @@ export default async function NarratorOverviewPage() {
 
   const req = await createLocalReq({ user }, payload)
 
-  const result = await payload.find({
-    collection: 'pages',
-    depth: 2,
-    limit: 1,
-    pagination: false,
-    req,
-    where: {
-      slug: {
-        equals: 'narrator-overview',
-      },
-    },
-  })
+  const { stories, active } = await getActiveStory(payload, req)
+  const overviewRef = active?.overviewPage
+  const overviewId = typeof overviewRef === 'object' && overviewRef ? overviewRef.id : (overviewRef ?? undefined)
+
+  const result = overviewId
+    ? { docs: [await payload.findByID({ collection: 'pages', id: overviewId, depth: 2, req })] }
+    : active?.script
+      ? { docs: [] as any[] }
+      : await payload.find({
+        collection: 'pages',
+        depth: 2,
+        limit: 1,
+        pagination: false,
+        req,
+        where: { slug: { equals: 'narrator-overview' } },
+      })
 
   const page = result.docs[0]
 
@@ -38,9 +44,19 @@ export default async function NarratorOverviewPage() {
     <main className="min-h-screen bg-[#020504] text-[#d8eee8]">
       <MotionTrackerSoundboard />
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-0">
-        <a className="text-sm text-[#d7f46b] underline-offset-4 hover:underline" href="/narrator">
-          Back to dashboard
-        </a>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <a className="text-sm text-[#d7f46b] underline-offset-4 hover:underline" href="/narrator">
+            Back to dashboard
+          </a>
+          {active ? (
+            <a className="text-sm text-[#d7f46b] underline-offset-4 hover:underline" href={`/narrator/stories/${active.slug}`}>
+              Skript &amp; Schiffspläne: {active.title}
+            </a>
+          ) : null}
+        </div>
+        <div className="mt-4">
+          <StorySwitcher activeId={active?.id} next="/narrator/overview" stories={stories} />
+        </div>
         <div className="mt-6 border-b border-[#24433d] pb-6">
           <p className="font-mono text-xs uppercase tracking-[0.18em] text-[#d7f46b]">Storytelling and hints</p>
           <h1 className="mt-2 text-3xl font-semibold text-[#f1f4de]">
@@ -54,7 +70,7 @@ export default async function NarratorOverviewPage() {
           <div className="text-[#d8eee8]">
             <RenderBlocks blocks={page.layout} />
           </div>
-        ) : (
+        ) : active?.script ? null : (
           <section className="mt-8 rounded border border-[#24433d] bg-[#07110f] p-6">
             <h2 className="text-xl text-[#f1f4de]">Create the overview page in Payload</h2>
             <p className="mt-3 text-[#8bb8aa]">

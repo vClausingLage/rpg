@@ -119,7 +119,7 @@ export async function createPlayer(formData: FormData) {
   const { payload, req } = await getAuthedLocalAPI()
   await payload.create({
     collection: 'players',
-    data: { name },
+    data: { name, story: formString(formData, 'storyId') ? Number(formString(formData, 'storyId')) : undefined },
     req,
   })
 

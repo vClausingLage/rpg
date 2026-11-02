@@ -356,7 +356,9 @@ export function NarratorDashboard({
   players,
   presets,
   responses,
+  storyId,
 }: {
+  storyId?: number | string
   loadoutOptions: LoadoutOptions
   players: Doc[]
   presets: Doc[]
@@ -387,6 +389,7 @@ export function NarratorDashboard({
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[280px_1fr]">
         <aside className="space-y-4">
           <form action={createPlayer} className="rounded border border-[#24433d] bg-[#07110f] p-4">
+            <input name="storyId" type="hidden" value={storyId ? String(storyId) : ''} />
             <label className="mb-2 block text-xs uppercase tracking-[0.12em] text-[#8bb8aa]">New player</label>
             <div className="flex gap-2">
               <input className="min-w-0 flex-1 rounded border border-[#315a51] bg-[#020504] px-3 text-sm" name="name" placeholder="Player name" required />
